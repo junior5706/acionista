@@ -74,6 +74,25 @@ df_filtrado['ROE'] = df_filtrado['ROE'] * 100
 # Converter a coluna 'Cresc. Rec.5a' para porcentagem legível
 df_filtrado['Cresc. Rec.5a'] = df_filtrado['Cresc. Rec.5a'] * 100
 
+# Converter a coluna 'PSR' para porcentagem legível
+df_filtrado['PSR'] = df_filtrado['PSR'] * 100
+
+# Converter a coluna 'P/Ativo' para porcentagem legível
+df_filtrado['P/Ativo'] = df_filtrado['P/Ativo'] * 100
+
+# Converter a coluna 'Mrg Ebit' para porcentagem legível
+df_filtrado['Mrg Ebit'] = df_filtrado['Mrg Ebit'] * 100
+
+# Converter a coluna 'Mrg. Líq.' para porcentagem legível
+df_filtrado['Mrg. Líq.'] = df_filtrado['Mrg. Líq.'] * 100
+
+# Converter a coluna 'ROIC' para porcentagem legível
+df_filtrado['ROIC'] = df_filtrado['ROIC'] * 100
+
+# Verificar se o arquivo resultado.xlsx existe no path atual e se existir apagar
+if os.path.exists('resultado.xlsx'):
+    os.remove('resultado.xlsx')
+
 # Exportar para XLSX o resultado
 df_filtrado.to_excel(xlsx_path, index=False)
 
