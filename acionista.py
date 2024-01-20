@@ -41,7 +41,7 @@ df_filtrado = df[
     (df['ROE'] < maxROE) &
     (df['Liq.2meses'] > liquidez_minima) &
     (df['Cresc. Rec.5a'] > crescimento_minimo)
-]
+].copy()
 
 # Criar um campo de pontuação no data frame para ranquear as ações de acordo com os critérios de ordenação acima considerando o top 5 de cada ordenação para somar 1 ponto a cada ação que aparecer no top 5
 # Inicializa a pontuação
@@ -86,4 +86,7 @@ if os.path.exists('resultado.xlsx'):
 df_filtrado.to_excel(xlsx_path, index=False)
 
 # Abrir o Excel com o resultado
-os.system("xdg-open resultado.xlsx")
+try:
+    os.system(f"xdg-open {xlsx_path}")
+except Exception as e:
+    print(f"Não foi possível abrir o arquivo: {e}")
