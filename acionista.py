@@ -15,8 +15,8 @@ maxPVP = 2
 minPL = 3
 maxPL = 10
 minDivYield = 0.07  # 6%
-maxDivYield = 0.14  # 14%
-minROE = 0.15  # 15%
+maxDivYield = 0.20  # 14%
+minROE = 0.12  # 15%
 maxROE = 0.30  # 30%
 liquidez_minima = 1000000  # R$ 1 milhão
 crescimento_minimo = 0.10  # 10%
@@ -42,6 +42,29 @@ df_filtrado = df[
     (df['Liq.2meses'] > liquidez_minima) &
     (df['Cresc. Rec.5a'] > crescimento_minimo)
 ].copy()
+
+# Adicionar uma nova coluna para o setor
+df_filtrado['Setor'] = ''
+
+# Loop para buscar informações de setor para cada ação
+for index, row in df_filtrado.iterrows():
+    papel = row['papel']
+    try:
+        detalhes_papel = fundamentus.get_papel(papel)
+
+        # Extrair o setor do dicionário de detalhes
+        setor = detalhes_papel['Setor'][0]
+
+        df_filtrado.at[index, 'Setor'] = setor
+    except Exception as e:
+        print(f"Erro ao obter informações para o papel {papel}: {e}")
+        df_filtrado.at[index, 'Setor'] = 'Erro na obtenção de dados'
+
+# Adicione uma nova coluna para a 'raiz' do código da ação
+df_filtrado['Raiz'] = df_filtrado['papel'].str.extract(r'([A-Za-z]+)')
+# Escolher a ação com maior liquidez para cada 'raiz' e remover as demais
+df_filtrado.sort_values(by='Liq.2meses', ascending=False, inplace=True)
+df_filtrado = df_filtrado.drop_duplicates(subset='Raiz', keep='first')
 
 # Criar um campo de pontuação no data frame para ranquear as ações de acordo com os critérios de ordenação acima considerando o top 5 de cada ordenação para somar 1 ponto a cada ação que aparecer no top 5
 # Inicializa a pontuação
@@ -74,7 +97,7 @@ df_filtrado['Cresc. Rec.5a'] = df_filtrado['Cresc. Rec.5a'] * 100
 colunas_para_excluir = [
     'PSR', 'P/Ativo', 'P/Cap.Giro', 'P/EBIT', 'P/Ativ Circ.Liq',
     'EV/EBIT', 'EV/EBITDA', 'Mrg Ebit', 'Mrg. Líq.',
-    'Liq. Corr.', 'ROIC'
+    'Liq. Corr.', 'ROIC', 'Raiz'
 ]
 df_filtrado.drop(colunas_para_excluir, axis=1, inplace=True)
 
