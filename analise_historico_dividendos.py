@@ -130,23 +130,37 @@ def main():
         df_results = pd.DataFrame(results_list)
         df_results = df_results.sort_values('DY Médio 3 Anos', ascending=False)
         
+        # Primeiro TOP 10 geral
         df_top10 = df_results.head(10).copy()
         df_top10.insert(0, 'Ranking', range(1, len(df_top10) + 1))
         
-        # Formatação das colunas (removendo Histórico 5+ Anos e Status)
+        # Formatação das colunas para o TOP 10
         df_top10['Preço'] = df_top10['Preço'].apply(lambda x: f"R$ {x:.2f}")
         df_top10['P/VP'] = df_top10['P/VP'].apply(lambda x: f"{x:.2f}")
         df_top10['DY Atual'] = df_top10['DY Atual'].apply(lambda x: f"{x:.2f}%")
         df_top10['DY Médio 3 Anos'] = df_top10['DY Médio 3 Anos'].apply(lambda x: f"{x:.2f}%")
         df_top10['Anos Pagando'] = df_top10['Anos Pagando'].apply(lambda x: f"{x} anos")
         
-        # Selecionar apenas as colunas que queremos mostrar
         colunas_para_mostrar = ['Ranking', 'Ticker', 'Setor', 'Preço', 'P/VP', 'DY Atual', 'DY Médio 3 Anos', 'Anos Pagando']
         df_top10 = df_top10[colunas_para_mostrar]
         
         print("\nTOP 10 - Ranking de Ações por Dividend Yield")
         print("Ordenado por DY Médio dos últimos 3 anos (maiores primeiro)")
         print(tabulate(df_top10, headers='keys', tablefmt='grid', showindex=False))
+        
+        # Agora pega o melhor de cada setor dentro do TOP 10
+        df_top_by_sector = df_top10.drop_duplicates(subset=['Setor'], keep='first')
+        df_top_by_sector = df_top_by_sector.copy()
+        df_top_by_sector['Ranking'] = range(1, len(df_top_by_sector) + 1)
+        
+        print("\nTOP Ações por Setor (baseado no TOP 10 anterior)")
+        print("Ordenado por DY Médio dos últimos 3 anos (maiores primeiro)")
+        print(tabulate(df_top_by_sector, headers='keys', tablefmt='grid', showindex=False))
+        
+        # Calcula a média do DY Médio 3 Anos
+        media_dy = df_top_by_sector['DY Médio 3 Anos'].str.rstrip('%').astype(float).mean()
+        
+        print(f"\nRentabilidade média das melhores ações por setor: {media_dy:.2f}% nos últimos 3 anos")
         
         print("\nCritérios analisados:")
         print("1. ✓ Liquidez mínima diária de R$3 milhões")
