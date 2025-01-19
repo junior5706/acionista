@@ -1,0 +1,6 @@
+fundamentus
+pandas
+pytz
+tabulate
+requests
+beautifulsoup4 

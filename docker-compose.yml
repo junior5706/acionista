@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  analise-dividendos:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1 
